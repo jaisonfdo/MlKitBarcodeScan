@@ -93,7 +93,7 @@ public class BarcodeScannerActivity extends AppCompatActivity {
         FirebaseVisionBarcodeDetectorOptions options =
                 new FirebaseVisionBarcodeDetectorOptions.Builder()
                         .setBarcodeFormats(
-                                FirebaseVisionBarcode.TYPE_CONTACT_INFO)
+                                FirebaseVisionBarcode.FORMAT_QR_CODE)
                         .build();
 
         FirebaseVisionBarcodeDetector detector = FirebaseVision.getInstance()
@@ -198,20 +198,18 @@ public class BarcodeScannerActivity extends AppCompatActivity {
         }
     };
 
-    private final Runnable mMessageSender = new Runnable() {
-        public void run() {
-            Log.d(TAG, "mMessageSender: ");
-            Message msg = mHandler.obtainMessage();
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(KEY_CAMERA_PERMISSION_GRANTED, false);
-            msg.setData(bundle);
-            mHandler.sendMessage(msg);
-        }
+    private final Runnable mMessageSender = () -> {
+        Log.d(TAG, "mMessageSender: ");
+        Message msg = mHandler.obtainMessage();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(KEY_CAMERA_PERMISSION_GRANTED, false);
+        msg.setData(bundle);
+        mHandler.sendMessage(msg);
     };
 
     public BarcodeResultListener getBarcodeResultListener() {
 
-        BarcodeResultListener barcodeResultListener = new BarcodeResultListener() {
+        return new BarcodeResultListener() {
             @Override
             public void onSuccess(@Nullable Bitmap originalCameraImage, @NonNull List<FirebaseVisionBarcode> barcodes, @NonNull FrameMetadata frameMetadata, @NonNull GraphicOverlay graphicOverlay) {
                 Log.d(TAG, "onSuccess: " + barcodes.size());
@@ -279,8 +277,6 @@ public class BarcodeScannerActivity extends AppCompatActivity {
 
             }
         };
-
-        return barcodeResultListener;
     }
 
     @Override
